@@ -1,1 +1,5 @@
 require "./freetype/api"
+require "./freetype/encoding"
+require "./freetype/sfnt_name"
+require "./freetype/stroker"
+require "./freetype/face"

@@ -70,33 +70,42 @@ lib LibFreetype
   FT_PALETTE_FOR_LIGHT_BACKGROUND  = 0x01
   FT_PALETTE_FOR_DARK_BACKGROUND   = 0x02
 
+  FT_FSTYPE_XXX = {
+    "FT_FSTYPE_INSTALLABLE_EMBEDDING"         => 0x0000,
+    "FT_FSTYPE_RESTRICTED_LICENSE_EMBEDDING"  => 0x0002,
+    "FT_FSTYPE_PREVIEW_AND_PRINT_EMBEDDING"   => 0x0004,
+    "FT_FSTYPE_EDITABLE_EMBEDDING"            => 0x0008,
+    "FT_FSTYPE_NO_SUBSETTING"                 => 0x0100,
+    "FT_FSTYPE_BITMAP_EMBEDDING_ONLY"         => 0x0200
+  }
+
   struct FT_Vector
-    x : FT_Pos
-    y : FT_Pos
+    x : LibC::Long
+    y : LibC::Long
   end
 
   struct FT_BBox
-    xMin : FT_Pos
-    yMin : FT_Pos
-    xMax : FT_Pos
-    yMax : FT_Pos
+    xMin : LibC::Long
+    yMin : LibC::Long
+    xMax : LibC::Long
+    yMax : LibC::Long
   end
 
   struct FT_Matrix
-    xx : FT_Pos
-    xy : FT_Pos
-    yx : FT_Pos
-    yy : FT_Pos
+    xx : LibC::Long
+    xy : LibC::Long
+    yx : LibC::Long
+    yy : LibC::Long
   end
 
   struct FT_UnitVector
-    x : FT_F2Dot14
-    y : FT_F2Dot14
+    x : LibC::Short
+    y : LibC::Short
   end
 
   struct FT_Data
-    pointer : FT_Byte*
-    length : FT_Int
+    pointer : LibC::Char*
+    length : LibC::Int
   end
 
   struct FT_Generic
@@ -115,32 +124,35 @@ lib LibFreetype
     palette : Void*
   end
 
-  struct FT_Face_Rect
-    num_faces : FT_Long
-    face_index : FT_Long
+  struct FT_FaceRec
+    num_faces : LibC::Long
+    face_index : LibC::Long
 
-    face_flags : FT_Long
-    style_flags : FT_Long
+    face_flags : LibC::Long
+    style_flags : LibC::Long
 
-    num_glyphs : FT_Long
+    num_glyphs : LibC::Long
 
-    family_name : FT_String*
-    style_name : FT_String*
+    family_name : LibC::Char*
+    style_name : LibC::Char*
 
-    num_fixed_sizes : FT_Int
+    num_fixed_sizes : LibC::Int
     available_sizes : FT_CharMap*
+
+    num_charmaps : LibC::Int
+    charmaps : FT_CharMap*
 
     generic : FT_Generic
 
     bbox : FT_BBox
 
-    units_per_EM : FT_UShort
-    ascender : FT_Short
-    descender : FT_Short
-    height : FT_Short
+    units_per_EM : LibC::UShort
+    ascender : LibC::Short
+    descender : LibC::Short
+    height : LibC::Short
 
-    max_advance_width : FT_Short
-    max_advance_height : FT_Short
+    max_advance_width : LibC::Short
+    max_advance_height : LibC::Short
 
     glyph : FT_GlyphSlot
     size : FT_Size
@@ -177,45 +189,45 @@ lib LibFreetype
   end
 
   struct FT_Size_Metrics
-    x_ppem : FT_UShort
-    y_ppem : FT_UShort
+    x_ppem : LibC::UShort
+    y_ppem : LibC::UShort
 
-    x_scale : FT_Fixed
-    y_scale : FT_Fixed
+    x_scale : LibC::Long
+    y_scale : LibC::Long
 
-    ascender : FT_Pos
-    descender : FT_Pos
-    height : FT_Pos
-    max_advance : FT_Pos
+    ascender : LibC::Long
+    descender : LibC::Long
+    height : LibC::Long
+    max_advance : LibC::Long
   end
 
   struct FT_GlyphSlotRec
     library : FT_Library
     face : FT_Face
     next : FT_GlyphSlot
-    glyph_index : FT_UInt
+    glyph_index : LibC::UInt
 
     metrics : FT_Glyph_Metrics
-    linearHoriAdvance : FT_Fixed
-    linearVertAdvance : FT_Fixed
+    linearHoriAdvance : LibC::Long
+    linearVertAdvance : LibC::Long
     advance : FT_Vector
 
     format : FT_Glyph_Format
 
     bitmap : FT_Bitmap
-    bitmap_left : FT_Int
-    bitmap_top : FT_Int
+    bitmap_left : LibC::Int
+    bitmap_top : LibC::Int
 
     outline : FT_Outline
 
-    num_subglyphs : FT_UInt
+    num_subglyphs : LibC::UInt
     subglyphs : FT_SubGlyph
 
     control_data : Void*
     control_len : LibC::Long
 
-    lsb_data : FT_Pos
-    rsb_data : FT_Pos
+    lsb_data : LibC::Long
+    rsb_data : LibC::Long
 
     other : Void*
 
@@ -234,79 +246,79 @@ lib LibFreetype
   end
 
   struct FT_Glyph_Metrics
-    width : FT_Pos
-    height : FT_Pos
+    width : LibC::Long
+    height : LibC::Long
 
-    horiBearingX : FT_Pos
-    horiBearingY : FT_Pos
-    horiAdvance : FT_Pos
+    horiBearingX : LibC::Long
+    horiBearingY : LibC::Long
+    horiAdvance : LibC::Long
 
-    vertBearingX : FT_Pos
-    vertBearingY : FT_Pos
-    vertAdvance : FT_Pos
+    vertBearingX : LibC::Long
+    vertBearingY : LibC::Long
+    vertAdvance : LibC::Long
   end
 
   struct FT_Bitmap_Size
-    height : FT_Short
-    width : FT_Short
+    height : LibC::Short
+    width : LibC::Short
 
-    size : FT_Pos
+    size : LibC::Long
 
-    x_ppem : FT_Pos
-    y_ppem : FT_Pos
+    x_ppem : LibC::Long
+    y_ppem : LibC::Long
   end
 
   struct FT_Parameter
-    tag : FT_ULong
-    data : FT_Pointer
+    tag : LibC::ULong
+    data : Void*
   end
 
   struct FT_Open_Args
-    flags : FT_UInt
-    memory_base : FT_Byte*
-    memory_size : FT_Long
-    pathname : FT_String*
+    flags : LibC::UInt
+    memory_base : LibC::Char*
+    memory_size : LibC::Long
+    pathname : LibC::Char**
     stream : FT_Stream
     driver : FT_Module
-    num_params : FT_Int
+    num_params : LibC::Int
     params : FT_Parameter*
   end
 
   struct FT_Size_RequestRec
     type : FT_Size_Request_Type
-    width : FT_Long
-    height : FT_Long
-    horiResolution : FT_UInt
-    vertResolution : FT_UInt
+    width : LibC::Long
+    height : LibC::Long
+    horiResolution : LibC::UInt
+    vertResolution : LibC::UInt
   end
 
   struct FT_CharMapRec
     face : FT_Face
     encoding : FT_Encoding
-    platform_id : FT_UShort
-    encoding_id : FT_UShort
+    platform_id : LibC::UShort
+    encoding_id : LibC::UShort
   end
 
   struct FT_Color
-    blue : FT_Byte
-    green : FT_Byte
-    red : FT_Byte
-    alpha : FT_Byte
+    blue : LibC::Char
+    green : LibC::Char
+    red : LibC::Char
+    alpha : LibC::Char
   end
 
   struct FT_Palette_Data
-    num_palettes : FT_UShort
-    palette_name_ids : FT_UShort*
-    palette_flags : FT_UShort
+    num_palettes : LibC::UShort
+    palette_name_ids : LibC::UShort*
+    palette_flags : LibC::UShort
 
-    num_palette_entries : FT_UShort
-    palette_entry_name_ids : FT_UShort
+    num_palette_entries : LibC::UShort
+    palette_entry_name_ids : LibC::UShort
   end
 
   struct FT_LayerIterator
-    num_layers : FT_UInt
-    layer : FT_UInt
-    p : FT_Byte*
+    num_layers : LibC::UInt
+    layer : LibC::UInt
+    p : LibC::Char*
   end
 
   struct FT_GlyphRec
@@ -318,8 +330,8 @@ lib LibFreetype
 
   struct FT_BitmapGlyphRec
     root : FT_GlyphRec
-    left : FT_Int
-    top : FT_Int
+    left : LibC::Int
+    top : LibC::Int
     bitmap : FT_Bitmap
   end
 
@@ -353,6 +365,21 @@ lib LibFreetype
     alloc : FT_Alloc_Func
     free : FT_Free_Func
     realloc : FT_Realloc_Func
+  end
+
+  struct FT_SfntName
+    platform_id : LibC::UShort
+    encoding_id : LibC::UShort
+    language_id : LibC::UShort
+    name_id     : LibC::UShort
+
+    string : LibC::Char* # this string is *not* null-terminated!
+    string_len : LibC::UInt
+  end
+
+  struct FT_SfntLangTag
+    string : LibC::Char* # this string is *not* null-terminated!
+    string_len : LibC::UInt
   end
 
   enum FT_Pixel_Mode
@@ -437,69 +464,110 @@ lib LibFreetype
     FT_GLYPH_BBOX_PIXELS    = 3
   end
 
-  fun FT_Library_Version(library : FT_Library, amajor : FT_Int*, aminot : FT_Int*, apatch : FT_Int*) : Void
-  fun FT_Face_CheckTrueTypePatents(face : FT_Face) : FT_Bool
-  fun FT_Face_SetUnpatentedHinting(face : FT_Face, value : FT_Bool) : FT_Bool
+  enum FT_StrokerBorder
+    FT_STROKER_BORDER_LEFT = 0
+    FT_STROKER_BORDER_RIGHT
+  end
 
-  fun FT_Init_FreeType(alibrary : FT_Library*) : FT_Error
-  fun FT_Done_FreeType(library : FT_Library) : FT_Error
-  fun FT_New_Face(library : FT_Library, filepathname : LibC::Char*, face_index : FT_Long, aface : FT_Face*) : FT_Error
-  fun FT_Done_Face(face : FT_Face) : FT_Error
-  fun FT_Reference_Face(face : FT_Face) : FT_Error
-  fun FT_Face_Properties(face : FT_Face, num_properties : FT_UInt, properties : FT_Parameter*) : FT_Error
-  fun FT_Open_Face(library : FT_Library, args : FT_Open_Args*, face_index : FT_Long, aface : FT_Face*) : FT_Error
-  fun FT_Attach_File(face : FT_Face, filepathname : LibC::Char*) : FT_Error
-  fun FT_Attach_Stream(face : FT_Face, parameters : FT_Open_Args*) : FT_Error
-  fun FT_Set_Char_Size(face : FT_Face, char_width : FT_F26Dot6, char_height : FT_F26Dot6, horz_resolution : FT_UInt, vert_resolution : FT_UInt) : FT_Error
-  fun FT_Set_Pixel_Sizes(face : FT_Face, pixel_width : FT_UInt, pixel_height : FT_UInt) : FT_Error
-  fun FT_Request_Size(face : FT_Face, req : FT_Size_Request) : FT_Error
-  fun FT_Select_Size(face : FT_Face, strike_index : FT_Int) : FT_Error
-  fun FT_Set_Transform(face : FT_Face, matrix : FT_Matrix, delta : FT_Vector) : FT_Error
-  fun FT_Load_Glyph(face : FT_Face, glyph_index : FT_UInt, load_flags : FT_Int32) : FT_Error
-  fun FT_Get_Char_Index(face : FT_Face, charcode : FT_ULong) : FT_Error
-  fun FT_Get_First_Char(face : FT_Face, agindex : FT_UInt*) : FT_Error
-  fun FT_Get_Next_Char(face : FT_Face, char_code : FT_ULong, agindex : FT_UInt*) : FT_Error
-  fun FT_Get_Name_Index(face : FT_Face, glyph_name : FT_String*) : FT_Error
-  fun FT_Load_Char(face : FT_Face, char_code : FT_ULong, load_flags : FT_Int32) : FT_Error
-  fun FT_Render_Glyph(slot : FT_GlyphSlot, render_mode : FT_Render_Mode) : FT_Error
-  fun FT_Get_Kerning(face : FT_Face, left_glyph : FT_UInt, right_glyph : FT_UInt, kern_mode : FT_UInt, akerning : FT_Vector*) : FT_Error
-  fun FT_Get_Track_Kerning(face : FT_Face, point_size : FT_Fixed, degree : FT_Int, akerning : FT_Vector*) : FT_Error
-  fun FT_Get_Glyph_Name(face : FT_Face, glyph_index : FT_UInt, buffer : FT_Pointer, buffer_max : FT_UInt) : FT_Error
+  enum FT_Stroker_LineCap
+    FT_STROKER_LINECAP_BUTT = 0
+    FT_STROKER_LINECAP_ROUND
+    FT_STROKER_LINECAP_SQUARE
+  end
+
+  enum FT_Stroker_LineJoin
+    FT_STROKER_LINEJOIN_ROUND          = 0
+    FT_STROKER_LINEJOIN_BEVEL          = 1
+    FT_STROKER_LINEJOIN_MITER_VARIABLE = 2
+    FT_STROKER_LINEJOIN_MITER          = 2
+    FT_STROKER_LINEJOIN_MITER_FIXED    = 3
+  end
+
+  fun FT_Library_Version(library : FT_Library, amajor : LibC::Int*, aminot : LibC::Int*, apatch : LibC::Int*) : Void
+  fun FT_Face_CheckTrueTypePatents(face : FT_Face) : LibC::Char
+  fun FT_Face_SetUnpatentedHinting(face : FT_Face, value : LibC::Char) : LibC::Char
+
+  fun FT_Init_FreeType(alibrary : FT_Library*) : LibC::Int
+  fun FT_Done_FreeType(library : FT_Library) : LibC::Int
+  fun FT_New_Face(library : FT_Library, filepathname : LibC::Char*, face_index : LibC::Long, aface : FT_Face*) : LibC::Int
+  fun FT_New_Memory_Face(library : FT_Library, filebase : LibC::Char*, filesize : LibC::Long, face_index : LibC::Long, aface : FT_Face*) : LibC::Int
+  fun FT_Done_Face(face : FT_Face) : LibC::Int
+  fun FT_Reference_Face(face : FT_Face) : LibC::Int
+  fun FT_Face_Properties(face : FT_Face, num_properties : LibC::UInt, properties : FT_Parameter*) : LibC::Int
+  fun FT_Open_Face(library : FT_Library, args : FT_Open_Args*, face_index : LibC::Long, aface : FT_Face*) : LibC::Int
+  fun FT_Attach_File(face : FT_Face, filepathname : LibC::Char*) : LibC::Int
+  fun FT_Attach_Stream(face : FT_Face, parameters : FT_Open_Args*) : LibC::Int
+  fun FT_Set_Char_Size(face : FT_Face, char_width : LibC::Long, char_height : LibC::Long, horz_resolution : LibC::UInt, vert_resolution : LibC::UInt) : LibC::Int
+  fun FT_Set_Pixel_Sizes(face : FT_Face, pixel_width : LibC::UInt, pixel_height : LibC::UInt) : LibC::Int
+  fun FT_Request_Size(face : FT_Face, req : FT_Size_Request) : LibC::Int
+  fun FT_Select_Size(face : FT_Face, strike_index : LibC::Int) : LibC::Int
+  fun FT_Set_Transform(face : FT_Face, matrix : FT_Matrix, delta : FT_Vector) : LibC::Int
+  fun FT_Load_Glyph(face : FT_Face, glyph_index : LibC::UInt, load_flags : LibC::Int32T) : LibC::Int
+  fun FT_Get_Char_Index(face : FT_Face, charcode : LibC::ULong) : LibC::Int
+  fun FT_Get_First_Char(face : FT_Face, agindex : LibC::UInt*) : LibC::Int
+  fun FT_Get_Next_Char(face : FT_Face, char_code : LibC::ULong, agindex : LibC::UInt*) : LibC::Int
+  fun FT_Get_Name_Index(face : FT_Face, glyph_name : LibC::Char*) : LibC::Int
+  fun FT_Load_Char(face : FT_Face, char_code : LibC::ULong, load_flags : LibC::Int32T) : LibC::Int
+  fun FT_Render_Glyph(slot : FT_GlyphSlot, render_mode : FT_Render_Mode) : LibC::Int
+  fun FT_Get_Kerning(face : FT_Face, left_glyph : LibC::UInt, right_glyph : LibC::UInt, kern_mode : LibC::UInt, akerning : FT_Vector*) : LibC::Int
+  fun FT_Get_Track_Kerning(face : FT_Face, point_size : LibC::Long, degree : LibC::Int, akerning : FT_Vector*) : LibC::Int
+  fun FT_Get_Glyph_Name(face : FT_Face, glyph_index : LibC::UInt, buffer : Void*, buffer_max : LibC::UInt) : LibC::Int
   fun FT_Get_Postscript_Name(face : FT_Face) : LibC::Char*
-  fun FT_Select_Charmap(face : FT_Face, encoding : FT_Encoding) : FT_Error
-  fun FT_Set_Charmap(face : FT_Face, charmap : FT_CharMap) : FT_Error
-  fun FT_Get_Charmap_Index(charmap : FT_CharMap) : FT_Int
-  fun FT_Get_FSType_Flags(face : FT_Face) : FT_UShort
-  fun FT_Get_SubGlyph_Info(glyph : FT_GlyphSlot, sub_index : FT_UInt, p_index : FT_Int*, p_flags : FT_UInt*, p_arg1 : FT_Int*, p_arg2 : FT_Int*, p_transform : FT_Matrix*) : FT_Error
+  fun FT_Select_Charmap(face : FT_Face, encoding : FT_Encoding) : LibC::Int
+  fun FT_Set_Charmap(face : FT_Face, charmap : FT_CharMap) : LibC::Int
+  fun FT_Get_Charmap_Index(charmap : FT_CharMap) : LibC::Int
+  fun FT_Get_FSType_Flags(face : FT_Face) : LibC::UShort
+  fun FT_Get_SubGlyph_Info(glyph : FT_GlyphSlot, sub_index : LibC::UInt, p_index : LibC::Int*, p_flags : LibC::UInt*, p_arg1 : LibC::Int*, p_arg2 : LibC::Int*, p_transform : FT_Matrix*) : LibC::Int
 
-  fun FT_Face_GetCharVariantIndex(face : FT_Face, charcode : FT_ULong, variantSelector : FT_ULong) : FT_UInt
-  fun FT_Face_GetCharVariantIsDefault(face : FT_Face, charcode : FT_ULong, variantSelector : FT_ULong) : FT_UInt
-  fun FT_Face_GetVariantSelectors(face : FT_Face) : FT_UInt32*
-  fun FT_Face_GetVariantsOfChar(face : FT_Face, charcode : FT_ULong) : FT_UInt32*
-  fun FT_Face_GetCharsOfVariant(face : FT_Face, variantSelector : FT_ULong) : FT_UInt32*
+  fun FT_Face_GetCharVariantIndex(face : FT_Face, charcode : LibC::ULong, variantSelector : LibC::ULong) : LibC::UInt
+  fun FT_Face_GetCharVariantIsDefault(face : FT_Face, charcode : LibC::ULong, variantSelector : LibC::ULong) : LibC::UInt
+  fun FT_Face_GetVariantSelectors(face : FT_Face) : LibC::UInt32T*
+  fun FT_Face_GetVariantsOfChar(face : FT_Face, charcode : LibC::ULong) : LibC::UInt32T*
+  fun FT_Face_GetCharsOfVariant(face : FT_Face, variantSelector : LibC::ULong) : LibC::UInt32T*
 
-  fun FT_Palette_Data_Get(face : FT_Face, apalette : FT_Palette_Data*) : FT_Error
-  fun FT_Palette_Select(face : FT_Face, palette_index : FT_UShort, apalette : FT_Color**)
-  fun FT_Palette_Set_Foreground_Color(face : FT_Face, foreground_color : FT_Color) : FT_Error
+  fun FT_Palette_Data_Get(face : FT_Face, apalette : FT_Palette_Data*) : LibC::Int
+  fun FT_Palette_Select(face : FT_Face, palette_index : LibC::UShort, apalette : FT_Color**)
+  fun FT_Palette_Set_Foreground_Color(face : FT_Face, foreground_color : FT_Color) : LibC::Int
 
-  fun FT_Get_Color_Glyph_Layer(face : FT_Face, base_glyph : FT_UInt, aglyph_index : FT_UInt*, acolor_index : FT_UInt*, iterator : FT_LayerIterator*) : FT_Bool
+  fun FT_Get_Color_Glyph_Layer(face : FT_Face, base_glyph : LibC::UInt, aglyph_index : LibC::UInt*, acolor_index : LibC::UInt*, iterator : FT_LayerIterator*) : LibC::Char
 
-  fun FT_New_Glyph(library : FT_Library, format : FT_Glyph_Format, aglyph : FT_Glyph*) : FT_Error
-  fun FT_Get_Glyph(slot : FT_GlyphSlot, aglyph : FT_Glyph*) : FT_Error
-  fun FT_Glyph_Copy(source : FT_Glyph, target : FT_Glyph*) : FT_Error
-  fun FT_Glyph_Transform(glyph : FT_Glyph, matrix : FT_Matrix*, delta : FT_Vector*) : FT_Error
-  fun FT_Glyph_Transform(glyph : FT_Glyph, matrix : FT_Matrix*, delta : FT_Vector*) : FT_Error
+  fun FT_New_Glyph(library : FT_Library, format : FT_Glyph_Format, aglyph : FT_Glyph*) : LibC::Int
+  fun FT_Get_Glyph(slot : FT_GlyphSlot, aglyph : FT_Glyph*) : LibC::Int
+  fun FT_Glyph_Copy(source : FT_Glyph, target : FT_Glyph*) : LibC::Int
+  fun FT_Glyph_Transform(glyph : FT_Glyph, matrix : FT_Matrix*, delta : FT_Vector*) : LibC::Int
+  fun FT_Glyph_Transform(glyph : FT_Glyph, matrix : FT_Matrix*, delta : FT_Vector*) : LibC::Int
   fun FT_Glyph_Get_CBox(glyph : FT_Glyph) : Void
-  fun FT_Glyph_To_Bitmap(the_glyph : FT_Glyph*, render_mode : FT_Render_Mode, origin : FT_Vector*, destroy : FT_Bool) : FT_Error
+  fun FT_Glyph_To_Bitmap(the_glyph : FT_Glyph*, render_mode : FT_Render_Mode, origin : FT_Vector*, destroy : LibC::Char) : LibC::Int
   fun FT_Done_Glyph(the_glyph : FT_Glyph) : Void
 
-  fun FT_New_Size(face : FT_Face, size : FT_Size*) : FT_Error
-  fun FT_Done_Size(size : FT_Size) : FT_Error
-  fun FT_Activate_Size(size : FT_Size) : FT_Error
+  fun FT_New_Size(face : FT_Face, size : FT_Size*) : LibC::Int
+  fun FT_Done_Size(size : FT_Size) : LibC::Int
+  fun FT_Activate_Size(size : FT_Size) : LibC::Int
+
+  fun FT_Get_Font_Format(face : FT_Face) : LibC::Char*
+
+  fun FT_Get_Sfnt_Name_Count(face : FT_Face) : LibC::UInt
+  fun FT_Get_Sfnt_Name(face : FT_Face, idx : LibC::UInt, aname : FT_SfntName*) : LibC::Int
+  fun FT_Get_Sfnt_LangTag(face : FT_Face, langID : LibC::UInt, alangTag : FT_SfntLangTag*) : LibC::Int
+
+  fun FT_Stroker_New(library : FT_Library, astroker : FT_Stroker*) : LibC::Int
+  fun FT_Stroker_Set(stroker : FT_Stroker, radius : LibC::Long, line_cap : FT_Stroker_LineCap, line_join : FT_Stroker_LineJoin, miter_limit : LibC::Long) : LibC::Int
+  fun FT_Stroker_Rewind(stroker : FT_Stroker) : LibC::Int
+  fun FT_Stroker_ParseOutline(stroker : FT_Stroker, outline : FT_Outline*, opened : LibC::Char) : LibC::Int
+  fun FT_Stroker_Done(stroker : FT_Stroker) : Void
+  fun FT_Stroker_BeginSubPath(stroker : FT_Stroker, to : FT_Vector*, open : LibC::Char) : LibC::Int
+  fun FT_Stroker_EndSubPath(stroker : FT_Stroker) : LibC::Int
+  fun FT_Stroker_LineTo(stroker : FT_Stroker, to : FT_Vector) : LibC::Int
+  fun FT_Stroker_ConicTo(stroker : FT_Stroker, control : FT_Vector*, to : FT_Vector*) : LibC::Int
+  fun FT_Stroker_CubicTo(stroker : FT_Stroker, control1 : FT_Vector*, control2 : FT_Vector*, to : FT_Vector*) : LibC::Int
+  fun FT_Stroker_GetBorderCounts(stroker : FT_Stroker, border : FT_StrokerBorder, anum_points : LibC::UInt*, anum_contours : LibC::UInt*) : LibC::Int
+  fun FT_Stroker_ExportBorder(stroker : FT_Stroker, border : FT_StrokerBorder, outline : FT_Outline*) : LibC::Int
+  fun FT_Stroker_GetCounts(stroker : FT_Stroker, anum_points : LibC::UInt, anum_contours : LibC::UInt) : LibC::Int
+  fun FT_Stroker_Export(stroker : FT_Stroker, outline : FT_Outline*) : Void
 
   type FT_Library = Void*
-  type FT_Face = Void*
-  type FT_Size = Void*
+  type FT_Face = FT_FaceRec*
+  type FT_Size = FT_SizeRec*
   type FT_SubGlyph = Void*
   type FT_Module = Void*
   type FT_Size_Request = Void*
@@ -515,36 +583,7 @@ lib LibFreetype
   type FT_CharMap = FT_CharMapRec*
   type FT_GlyphSlot = FT_GlyphSlotRec*
   type FT_Stream = FT_StreamRec*
-
-  type FT_Byte = LibC::Char
-  type FT_Bytes = FT_Byte*
-  type FT_Char = LibC::Char
-  type FT_Int = LibC::Int
-  type FT_UInt = LibC::UInt
-  type FT_Int16 = LibC::Int16T
-  type FT_UInt16 = LibC::UInt16T
-  type FT_Int32 = LibC::Int32T
-  type FT_UInt32 = LibC::UInt32T
-  type FT_Int64 = LibC::Int64T
-  type FT_UInt64 = LibC::UInt64T
-  type FT_Short = LibC::Short
-  type FT_UShort = LibC::UShort
-  type FT_Long = LibC::Long
-  type FT_ULong = LibC::ULong
-  type FT_Bool = LibC::Char
-  type FT_Offset = LibC::ULong
-  type FT_PtrDist = LibC::Long
-  type FT_String = LibC::Char*
-  type FT_Tag = FT_UInt32
-  type FT_Error = LibC::Int
-  type FT_Fixed = LibC::Long
-  type FT_Pointer = Void*
-  type FT_Pos = LibC::Long
-  type FT_Word = LibC::Short
-  type FT_FWord = LibC::Short
-  type FT_UFWord = LibC::UShort
-  type FT_F2Dot14 = LibC::Short
-  type FT_F26Dot6 = LibC::Long
+  type FT_Stroker = Void*
 
   type FT_Generic_Finalizer = (Void* -> Void)
   type FT_Stream_IoFunc = (FT_Stream, LibC::Long, LibC::Char*,  LibC::Long -> LibC::ULong)
