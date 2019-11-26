@@ -8,13 +8,13 @@ module Freetype
   # This can be useful to generate 'bordered' glyph, i.e., glyphs displayed
   # with a coloured (and anti-aliased) border around their shape.
   class Stroker
-    @stroker : LibFreetype::FT_Stroker
+    getter stroker : LibFreetype::FT_Stroker
 
     def initialize
-      library = Freetype::Face.get_handle
+      library = Freetype.get_handle
       stroker = Pointer(LibFreetype::FT_Stroker).malloc
       error = LibFreetype.FT_Stroker_New(library, stroker)
-      raise "Error" if error > 0
+      raise Error.new(error) if error > 0
       @stroker = stroker
     end
 
@@ -45,7 +45,7 @@ module Freetype
     def parse_outline(outline, opened = false)
       opened = opened ? 1 : 0
       error = LibFreetype.FT_Stroker_ParseOutline(@stroker, outline, opened)
-      raise "Error" if error > 0
+      raise Error.new(error) if error > 0
     end
 
     # Start a new sub-path in the stroker.
@@ -56,7 +56,7 @@ module Freetype
     #   stored as an 'Outline' object.
     def begin_subpath(to, open)
       error = LibFreetype.FT_Stroker_BeginSubpath(@stroker, to, open)
-      raise "Error" if error > 0
+      raise Error.new(error) if error > 0
     end
 
     # Close the current sub-path in the stroker.
@@ -68,7 +68,7 @@ module Freetype
     #   start position when needed.
     def end_subpath
       error = LibFreetype.FT_Stroker_EndSubpath(@stroker)
-      raise "Error" if error > 0
+      raise Error.new(error) if error > 0
     end
 
     # 'Draw' a single line segment in the stroker's current sub-path, from
@@ -80,7 +80,7 @@ module Freetype
     #   'end_subpath'.
     def line_to(to)
       error = LibFreetype.FT_Stroker_LineTo(@stroker, to)
-      raise "Error" if error > 0
+      raise Error.new(error) if error > 0
     end
 
     # 'Draw' a single quadratic Bezier in the stroker's current sub-path,
@@ -92,7 +92,7 @@ module Freetype
     #   'end_subpath'.
     def conic_to(control, to)
       error = LibFreetype.FT_Stroker_ConicTo(@stroker, control, to)
-      raise "Error" if error > 0
+      raise Error.new(error) if error > 0
     end
 
     # 'Draw' a single quadratic Bezier in the stroker's current sub-path,
@@ -104,7 +104,7 @@ module Freetype
     #   'end_subpath'.
     def cubic_to(control1, control2, to)
       error = LibFreetype.FT_Stroker_CubicTo(@stroker, control1, control2, to)
-      raise "Error" if error > 0
+      raise Error.new(error) if error > 0
     end
 
     # Call this function once you have finished parsing your paths with the
@@ -115,7 +115,7 @@ module Freetype
       anum_points = Pointer(LibC::UInt).malloc
       anum_contours = Pointer(LibC::UInt).malloc
       error = LibFreetype.FT_Stroker_CubicTo(@stroker, border, anum_points, anum_contours)
-      raise "Error" if error > 0
+      raise Error.new(error) if error > 0
       {anum_points.value, anum_contours.value}
     end
 
@@ -151,7 +151,7 @@ module Freetype
       anum_points = Pointer(LibC::UInt).malloc
       anum_contours = Pointer(LibC::UInt).malloc
       error = LibFreetype.FT_Stroker_GetCounts(@stroker, anum_points, anum_contours)
-      raise "Error" if error > 0
+      raise Error.new(error) if error > 0
       {anum_points.value, anum_contours.value}
     end
 

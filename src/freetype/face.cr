@@ -1,21 +1,22 @@
 module Freetype
   class Face
 
-    @library : LibFreetype::FT_Library
-    @face : LibFreetype::FT_Face
+    getter library : Library
+    getter face : LibFreetype::FT_Face
 
     def initialize(filename : String | IO, index : Number = 0)
       face = Pointer(LibFreetype::FT_Face).malloc
-      @library = Face.get_handle
+      library = Freetype.get_handle
 
       if filename.is_a?(String)
-        error = Face.face_from_file(@library, face, index, filename)
+        error = Face.face_from_file(library, face, index, filename)
       else
-        error = Face.face_from_memory(@library, face, index, filename)
+        error = Face.face_from_memory(library, face, index, filename)
       end
 
       raise "Failed to load font at path '#{filename}'" if error > 0
 
+      @library = Library.new(library)
       @face = face.value
     end
 
@@ -40,12 +41,14 @@ module Freetype
     # A character width or height smaller than 1pt is set to 1pt; if both
     # resolution values are zero, they are set to 72dpi.
     def set_char_size(width = 0, height = 0, hres = 72, vres = 72)
-      LibFreetype.FT_Set_Char_Size(@face, width, height, hres, vres)
+      error = LibFreetype.FT_Set_Char_Size(@face, width, height, hres, vres)
+      raise Error.new(error) if error > 0
     end
 
     # This function calls FT_Request_Size to request the nominal size (in pixels).
     def set_pixel_sizes(width, height)
-      LibFreetype.FT_Set_Pixel_Sizes(@face, width, height)
+      error = LibFreetype.FT_Set_Pixel_Sizes(@face, width, height)
+      raise Error.new(error) if error > 0
     end
 
     # Select a given charmap by its encoding tag (as listed in 'freetype.h').
@@ -59,13 +62,24 @@ module Freetype
     # encoding, this function has some special code to select the one which
     # covers Unicode best ('best' in the sense that a UCS-4 cmap is preferred
     # to a UCS-2 cmap). It is thus preferable to FT_Set_Charmap in this case.
-    def select_charmap(encoding : Freetype::Encoding)
-      LibFreetype.FT_Select_Charmap(@face, encoding)
+    def select_charmap(encoding : LibFreetype::FT_Encoding)
+      error = LibFreetype.FT_Select_Charmap(@face, encoding)
+      raise Error.new(error) if error > 0
     end
 
     # Select a given charmap for character code to glyph index mapping.
     def set_charmap(charmap)
-      LibFreetype.FT_Set_Charmap(@face, encoding)
+      if charmap.is_a?(Charmap)
+        error = LibFreetype.FT_Set_Charmap(@face, charmap.charmap)
+      elsif charmap.is_a?(LibFreetype::FT_CharMap)
+        error = LibFreetype.FT_Set_Charmap(@face, charmap)
+      else
+        error = LibFreetype.FT_Set_Charmap(@face, @face.value.charmaps[charmap])
+      end
+      # Type 14 is allowed to fail, to match ft2demo's behavior.
+      error = 0 if charmap.cmap_format == 14
+
+      raise Error.new(error) if error > 0
     end
 
     # Return the glyph index of a given character code. This function uses a
@@ -91,9 +105,17 @@ module Freetype
       String.new(buff)
     end
 
+    # Returns all unicode character codes in the current charmap of a given face.
+    # For each character it also returns the corresponding glyph index.
     def chars
-      charcode, index = get_first_char
-
+      chars = [] of Tuple(Int32, UInt32)
+      charcode, index = first_char
+      chars << {charcode, index}
+      while index != 0
+        charcode, index = next_char(charcode, 0_u32)
+        chars << {charcode, index}
+      end
+      chars
     end
 
     # This function is used to return the first character code in the current
@@ -157,7 +179,7 @@ module Freetype
     # Select a bitmap strike.
     def select_size(strike_index)
       error = LibFreetype.FT_Select_Size(@face, strike_index)
-      raise "Error" if error > 0
+      raise Error.new(error) if error > 0
     end
 
     # A function used to load a single glyph into the glyph slot of a face
@@ -174,7 +196,7 @@ module Freetype
     #   FT_FACE_FLAG_CID_KEYED flag for more details.
     def load_glyph(index, flags = LibFreetype::FT_LOAD_RENDER)
       error = LibFreetype.FT_Load_Glyph(@face, index, flags)
-      raise "Error" if error > 0
+      raise Error.new(error) if error > 0
     end
 
     # A function used to load a single glyph into the glyph slot of a face
@@ -186,7 +208,7 @@ module Freetype
     def load_char(char, flags = LibFreetype::FT_LOAD_RENDER)
       charcode = char.is_a?(Char) ? char.ord : char
       error = LibFreetype.FT_Load_Char(@face, charcode, flags)
-      raise "Error" if error > 0
+      raise Error.new(error) if error > 0
     end
 
     # Retrieve the advance value of a given glyph outline in an FT_Face. By
@@ -198,7 +220,7 @@ module Freetype
     def advance(gindex, flags)
       padvance = Pointer(Int64).malloc
       error = LibFreetype.FT_Get_Advance(@face, gindex, flags, padvance)
-      raise "Error" if error > 0
+      raise Error.new(error) if error > 0
       padvance.value
     end
 
@@ -215,7 +237,7 @@ module Freetype
       right_glyph = get_char_index(right)
       kerning = Pointer(LibFreetype::FT_Vector).malloc
       error = LibFreetype.FT_Get_Kerning(@face, left_glyph, right_glyph, mode, kerning)
-      raise "Error" if error > 0
+      raise Error.new(error) if error > 0
       kerning.value
     end
 
@@ -258,7 +280,7 @@ module Freetype
     def sfnt_name(index)
       name = Pointer(LibFreetype::FT_SfntName).malloc
       error = LibFreetype.FT_Get_Sfnt_Name(@face, index, name)
-      raise "Error" if error > 0
+      raise Error.new(error) if error > 0
       SfntName.new(name.value)
     end
 
@@ -299,6 +321,13 @@ module Freetype
     # If this macro is true, all functions defined in
     # FT_SFNT_NAMES_H and FT_TRUETYPE_TABLES_H are available.
     def sfnt?
+      !!(face_flags & LibFreetype::FT_FACE_FLAG_SFNT)
+    end
+
+    # True whenever a face object contains a font face that
+    # contains fixed-width (or 'monospace', 'fixed-pitch',
+    # etc.) glyphs.
+    def fixed_width?
       !!(face_flags & LibFreetype::FT_FACE_FLAG_FIXED_WIDTH)
     end
 
@@ -312,6 +341,14 @@ module Freetype
     # True whenever a face object contains some glyph names
     # that can be accessed through FT_Get_Glyph_Name.
     def has_glyph_names?
+      !!(face_flags & LibFreetype::FT_FACE_FLAG_GLYPH_NAMES )
+    end
+
+    # True whenever a face object contains some
+    # multiple masters. The functions provided by
+    # FT_MULTIPLE_MASTERS_H are then available to
+    # choose the exact design you want.''')
+    def has_multiple_masters?
       !!(face_flags & LibFreetype::FT_FACE_FLAG_MULTIPLE_MASTERS )
     end
 
@@ -400,8 +437,8 @@ module Freetype
     def available_sizes
       n = num_fixed_sizes
       ft_sizes = @face.value.available_sizes
-      Array(LibFreetype::FT_Charmap).new do |i|
-        ft_sizes[i]
+      Array(BitmapSize).new(n) do |i|
+        BitmapSize.new(ft_sizes[i])
       end
     end
 
@@ -412,9 +449,9 @@ module Freetype
     # A list of the charmaps of the face.
     def charmaps
       n = num_charmaps
-      ft_charmaps = @face.value.charmaps.value
-      Array(LibFreetype::FT_Charmap).new do |i|
-        ft_charmaps[i]
+      ft_charmaps = @face.value.charmaps
+      Array(Charmap).new(n) do |i|
+        Charmap.new(ft_charmaps[i])
       end
     end
 
@@ -427,7 +464,7 @@ module Freetype
     # Note that the bounding box might be off by (at least) one pixel
     # for hinted fonts. See FT_Size_Metrics for further discussion.
     def bbox
-      @face.value.bbox
+      BBox.new(@face.value.bbox)
     end
 
     # The number of font units per EM square for this
@@ -491,31 +528,26 @@ module Freetype
 
     # The face's associated glyph slot(s).
     def glyph
-      glyph = @face.value.glyph.value
-      # GlyphSlot.new(glyph)
+      glyph = @face.value.glyph
+      pp glyph.value
+      GlyphSlot.new(glyph)
     end
 
     # The current active size for this face.
     def size
       size = @face.value.size
       metrics = size.value.metrics
-      # SizeMetrics.new(metrics)
+      SizeMetrics.new(metrics)
     end
 
     # The current active charmap for this face.
     def charmap
       charmap = @face.value.charmap
-      # Charmap.new(charmap)
+      Charmap.new(charmap)
     end
 
     def finalize
       LibFreetype.FT_Done_Face(@face)
-    end
-
-    def self.get_handle
-      library = Pointer(LibFreetype::FT_Library).malloc
-      LibFreetype.FT_Init_FreeType(library)
-      library.value
     end
 
     def self.face_from_memory(library, face, index, io)

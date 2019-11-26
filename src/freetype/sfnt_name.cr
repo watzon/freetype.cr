@@ -1,31 +1,33 @@
 module Freetype
   class SfntName
-    def initialize(@name : LibFreetype::FT_SfntName)
+    getter sfnt_name
+
+    def initialize(@sfnt_name : LibFreetype::FT_SfntName)
     end
 
     # The platform ID for 'string'.
     def platform_id
-      @name.platform_id
+      @sfnt_name.platform_id
     end
 
     # The encoding ID for 'string'.
     def encoding_id
-      @name.encoding_id
+      @sfnt_name.encoding_id
     end
 
     # The language ID for 'string'.
     def language_id
-      @name.language_id
+      @sfnt_name.language_id
     end
 
     # An identifier for 'string'.
     def name_id
-      @name.name_id
+      @sfnt_name.name_id
     end
 
     # The length of 'string' in bytes.
     def string_len
-      @name.string_len.to_i
+      @sfnt_name.string_len.to_i
     end
 
     # The 'name' string. Note that its format differs depending on
@@ -35,7 +37,7 @@ module Freetype
     # Generally speaking, the string is not zero-terminated. Please
     # refer to the TrueType specification for details.
     def string
-      String.new(@name.string, string_len)
+      String.new(@sfnt_name.string, string_len)
     end
 
     forward_missing_to string
