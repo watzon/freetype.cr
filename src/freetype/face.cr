@@ -4,16 +4,11 @@ module Freetype
     getter library : Library
     getter face : LibFreetype::FT_Face
 
-    def initialize(filename : String | IO, index : Number = 0)
+    def initialize(filename : String, index : Number = 0)
       face = Pointer(LibFreetype::FT_Face).malloc
       library = Freetype.get_handle
 
-      if filename.is_a?(String)
-        error = Face.face_from_file(library, face, index, filename)
-      else
-        error = Face.face_from_memory(library, face, index, filename)
-      end
-
+      error = Face.face_from_file(library, face, index, filename)
       raise "Failed to load font at path '#{filename}'" if error > 0
 
       @library = Library.new(library)
@@ -98,7 +93,7 @@ module Freetype
 
     # This function is used to return the glyph name for the given char.
     def glyph_name(index : Char | Int, max_bytes = 64)
-      index = index.is_a?(Char) ? get_char_index(index) : index
+      index = index.is_a?(Char) ? char_index(index) : index
       buff = Slice(UInt8).new(max_bytes)
       error = LibFreetype.FT_Get_Glyph_Name(@face, index, buff, max_bytes)
       raise "Error getting glyph name for char at index #{index}" if error > 0
@@ -232,9 +227,9 @@ module Freetype
     #   by this method. Other layouts, or more sophisticated kernings, are out
     #   of the scope of this API function -- they can be implemented through
     #   format-specific interfaces.
-    def kerning(left, right, mode = LibFreetype::FT_Kerning_Mode::FT_KERNING_DEFAULT)
-      left_glyph = get_char_index(left)
-      right_glyph = get_char_index(right)
+    def kerning(left, right, mode = LibFreetype::FT_KERNING_DEFAULT)
+      left_glyph = char_index(left)
+      right_glyph = char_index(right)
       kerning = Pointer(LibFreetype::FT_Vector).malloc
       error = LibFreetype.FT_Get_Kerning(@face, left_glyph, right_glyph, mode, kerning)
       raise Error.new(error) if error > 0
@@ -527,9 +522,8 @@ module Freetype
     end
 
     # The face's associated glyph slot(s).
-    def glyph
+    def glyph_slot
       glyph = @face.value.glyph
-      pp glyph.value
       GlyphSlot.new(glyph)
     end
 
@@ -550,10 +544,10 @@ module Freetype
       LibFreetype.FT_Done_Face(@face)
     end
 
-    def self.face_from_memory(library, face, index, io)
-      bytes = io.to_slice
-      LibFreetype.FT_New_Memory_Face(library, pointerof(bytes), index.to_i64, face)
-    end
+    # def self.face_from_memory(library, face, index, io)
+    #   bytes = io.to_slice
+    #   LibFreetype.FT_New_Memory_Face(library, pointerof(bytes), bytes.size, index.to_i64, face)
+    # end
 
     def self.face_from_file(library, face, index, path)
       LibFreetype.FT_New_Face(library, path, index.to_i64, face)

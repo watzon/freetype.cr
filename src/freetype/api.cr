@@ -1,4 +1,4 @@
-@[Link("freetype")]
+@[Link(ldflags: "-lfreetype -lharfbuzz -lpng16")]
 lib LibFreetype
   FT_PIXEL_MODE_NONE = 0
   FT_PIXEL_MODE_MONO = 1
@@ -69,23 +69,22 @@ lib LibFreetype
   FT_OPEN_PARAMS    = 0x10
 
   FT_LOAD_DEFAULT                      = 0x0
-  FT_LOAD_NO_SCALE                     = 0x1
-  FT_LOAD_NO_HINTING                   = 0x2
-  FT_LOAD_RENDER                       = 0x4
-  FT_LOAD_NO_BITMAP                    = 0x8
-  FT_LOAD_VERTICAL_LAYOUT              = 0x10
-  FT_LOAD_FORCE_AUTOHINT               = 0x20
-  FT_LOAD_CROP_BITMAP                  = 0x40
-  FT_LOAD_PEDANTIC                     = 0x80
-  FT_LOAD_IGNORE_GLOBAL_ADVANCE_WIDTH  = 0x200
-  FT_LOAD_NO_RECURSE                   = 0x400
-  FT_LOAD_IGNORE_TRANSFORM             = 0x800
-  FT_LOAD_MONOCHROME                   = 0x1000
-  FT_LOAD_LINEAR_DESIGN                = 0x2000
-  FT_LOAD_NO_AUTOHINT                  = 0x8000
-  FT_LOAD_COLOR                        = 0x100000
-  FT_LOAD_COMPUTE_METRICS              = 0x200000
-  FT_LOAD_BITMAP_METRICS_ONLY          = 0x400000
+  FT_LOAD_NO_SCALE                     = 1 << 0
+  FT_LOAD_NO_HINTING                   = 1 << 1
+  FT_LOAD_RENDER                       = 1 << 2
+  FT_LOAD_NO_BITMAP                    = 1 << 3
+  FT_LOAD_VERTICAL_LAYOUT              = 1 << 4
+  FT_LOAD_FORCE_AUTOHINT               = 1 << 5
+  FT_LOAD_CROP_BITMAP                  = 1 << 6
+  FT_LOAD_PEDANTIC                     = 1 << 7
+  FT_LOAD_IGNORE_GLOBAL_ADVANCE_WIDTH  = 1 << 9
+  FT_LOAD_NO_RECURSE                   = 1 << 10
+  FT_LOAD_IGNORE_TRANSFORM             = 1 << 11
+  FT_LOAD_MONOCHROME                   = 1 << 12
+  FT_LOAD_LINEAR_DESIGN                = 1 << 13
+  FT_LOAD_NO_AUTOHINT                  = 1 << 15
+  FT_LOAD_COLOR                        = 1 << 20
+  FT_LOAD_COMPUTE_METRICS              = 1 << 21
 
   FT_RENDER_MODE_NORMAL = 0
   FT_RENDER_MODE_LIGHT = 1
@@ -593,6 +592,14 @@ lib LibFreetype
   TT_NAME_ID_PREFERRED_FAMILY     = TT_NAME_ID_TYPOGRAPHIC_FAMILY
   TT_NAME_ID_PREFERRED_SUBFAMILY  = TT_NAME_ID_TYPOGRAPHIC_SUBFAMILY
 
+  FT_LCD_FILTER_NONE    = 0
+  FT_LCD_FILTER_DEFAULT = 1
+  FT_LCD_FILTER_LIGHT   = 2
+  FT_LCD_FILTER_LEGACY1 = 3
+  FT_LCD_FILTER_LEGACY  = 16
+
+  FT_LCD_FILTER_MAX     = 17
+
   FT_FSTYPE_XXX = {
     "FT_FSTYPE_INSTALLABLE_EMBEDDING"         => 0x0000,
     "FT_FSTYPE_RESTRICTED_LICENSE_EMBEDDING"  => 0x0002,
@@ -1014,7 +1021,18 @@ lib LibFreetype
     MITER_FIXED    = FT_STROKER_LINEJOIN_MITER_FIXED
   end
 
+  enum FT_LcdFilter
+    NONE    = FT_LCD_FILTER_NONE
+    DEFAULT = FT_LCD_FILTER_DEFAULT
+    LIGHT   = FT_LCD_FILTER_LIGHT
+    LEGACY1 = FT_LCD_FILTER_LEGACY1
+    LEGACY  = FT_LCD_FILTER_LEGACY
+
+    MAX = FT_LCD_FILTER_MAX
+  end
+
   fun FT_Library_Version(library : FT_Library, amajor : LibC::Int*, aminot : LibC::Int*, apatch : LibC::Int*) : Void
+  fun FT_Library_SetLcdFilter(library : FT_Library, filter : LibC::Int) : LibC::Int
   fun FT_Face_CheckTrueTypePatents(face : FT_Face) : LibC::Char
   fun FT_Face_SetUnpatentedHinting(face : FT_Face, value : LibC::Char) : LibC::Char
 

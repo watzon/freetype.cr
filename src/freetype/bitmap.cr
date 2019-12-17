@@ -36,7 +36,7 @@ module Freetype
     # A typeless pointer to the bitmap buffer. This value should be aligned on 32-bit boundaries
     # in most cases.
     def buffer
-      Array(UInt8).new(rows * pitch) do |i|
+      Array(UInt8).new(rows * width) do |i|
         @bitmap.buffer[i]
       end
     end
