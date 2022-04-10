@@ -9,7 +9,7 @@ Crystal bindings to Freetype2
    ```yaml
    dependencies:
      freetype:
-       github: watzon/freetype
+       github: watzon/freetype.cr
    ```
 
 2. Run `shards install`
