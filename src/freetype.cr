@@ -15,7 +15,8 @@ module Freetype
 
   def self.get_handle
     library = Pointer(LibFreetype::FT_Library).malloc
-    LibFreetype.FT_Init_FreeType(library)
+    error = LibFreetype.FT_Init_FreeType(library)
+    raise "error" if error > 0
     library.value
   end
 end
