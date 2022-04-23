@@ -4,6 +4,7 @@ lib LibFreetype
     face : FT_Face
     next : FT_GlyphSlot
     glyph_index : LibC::UInt
+    generic : FT_Generic
 
     metrics : FT_Glyph_Metrics
     linearHoriAdvance : LibC::Long
